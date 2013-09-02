@@ -1,0 +1,3 @@
+[submodule "IronGitHub"]
+	path = IronGitHub
+	url = https://github.com/Digiex/IronGitHub

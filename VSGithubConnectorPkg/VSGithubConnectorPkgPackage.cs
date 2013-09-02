@@ -8,6 +8,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
+using IronGitHub;
 
 namespace Digiexnet.VSGithubConnectorPkg
 {
@@ -34,6 +35,7 @@ namespace Digiexnet.VSGithubConnectorPkg
     [Guid(GuidList.guidVSGithubConnectorPkgPkgString)]
     public sealed class VSGithubConnectorPkgPackage : Package
     {
+        public static GitHubApi Api = GitHubApi.Create();
         /// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require 
