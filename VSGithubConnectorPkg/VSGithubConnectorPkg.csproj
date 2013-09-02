@@ -131,6 +131,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IssueListItem.cs" />
     <Compile Include="IssuesControl.xaml.cs">
       <DependentUpon>IssuesControl.xaml</DependentUpon>
     </Compile>

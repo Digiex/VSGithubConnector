@@ -1,6 +1,8 @@
 ﻿using IronGitHub;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,8 +24,10 @@ namespace Digiexnet.VSGithubConnectorPkg
     public partial class IssuesControl : UserControl
     {
         GitHubApi Api;
+        public MainViewModel ViewModel = new MainViewModel();
         public IssuesControl()
         {
+            this.DataContext = ViewModel;
             InitializeComponent();
             Api = VSGithubConnectorPkgPackage.Api;
             if (Api.Context.Authorization.Token == null)
@@ -53,9 +57,45 @@ namespace Digiexnet.VSGithubConnectorPkg
                 var issues = await VSGithubConnectorPkgPackage.Api.Issues.Get("windowsphonehacker", "SparklrWP");
                 foreach (var issue in issues)
                 {
-                    issueListView.Items.Add(issue.Title);
+                    ViewModel.Items.Add(new IssueListItem() {
+                        Name = issue.Title,
+                        Id = issue.Number,
+                        Body = issue.Body
+                    });
                 }
             }
         }
+    }
+
+    public class MainViewModel : INotifyPropertyChanged
+    {
+        private ObservableCollection<IssueListItem> _items = new ObservableCollection<IssueListItem>();
+
+        public ObservableCollection<IssueListItem> Items
+        {
+            get
+            {
+                return _items;
+            }
+            private set
+            {
+                if (_items != value)
+                {
+                    _items = value;
+                        NotifyPropertyChanged("Items");
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void NotifyPropertyChanged(String propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (null != handler)
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
     }
 }
