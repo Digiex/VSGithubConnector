@@ -1,18 +1,8 @@
 ﻿using IronGitHub;
+using IronGitHub.Exceptions;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Digiexnet.VSGithubConnectorPkg
 {
@@ -21,6 +11,13 @@ namespace Digiexnet.VSGithubConnectorPkg
     /// </summary>
     public partial class LoginControl : UserControl
     {
+        public string User
+        {
+            get
+            {
+                return usernameBox.Text;
+            }
+        }
         public event EventHandler LoggedIn;
         public LoginControl()
         {
@@ -29,17 +26,37 @@ namespace Digiexnet.VSGithubConnectorPkg
 
         public async void DoLogin()
         {
-
-            var auth = await VSGithubConnectorPkgPackage.Api.Authorize(new System.Net.NetworkCredential(usernameBox.Text, passwordBox.Password), new Scopes[] { Scopes.Repo });
-            if (LoggedIn != null && auth.Token != null)
+            loginButton.IsEnabled = false;
+            try
             {
-                LoggedIn(this, new EventArgs());
+                var auth = await VSGithubConnectorPkgPackage.Api.Authorize(new System.Net.NetworkCredential(usernameBox.Text, passwordBox.Password), new Scopes[] { Scopes.Repo });
+                if (LoggedIn != null && auth.Token != null)
+                {
+                    LoggedIn(this, new EventArgs());
+                }
+            }
+            catch (UnauthorizedException)
+            {
+                System.Windows.Forms.MessageBox.Show("Wrong username or password.");
+            }
+            finally
+            {
+                loginButton.IsEnabled = true;
             }
         }
 
         private void loginButton_Click(object sender, RoutedEventArgs e)
         {
-            DoLogin();
+            if (usernameBox.Text != "" && passwordBox.Password != "")
+                DoLogin();
+        }
+
+        private void checkEnter_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Enter)
+            {
+                loginButton_Click(this, null);
+            }
         }
     }
 }

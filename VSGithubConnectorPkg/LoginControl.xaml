@@ -9,13 +9,17 @@
              d:DesignHeight="300" d:DesignWidth="300"
              Name="MyToolWindow">
     <Grid>
-        <StackPanel Orientation="Vertical">
+        <StackPanel Orientation="Vertical" VerticalAlignment="Center">
             <TextBlock Margin="10" HorizontalAlignment="Center">Github Issues</TextBlock>
-            <Label Content="Username:"/>
-            <TextBox Height="23" TextWrapping="Wrap" Name="usernameBox"/>
-            <Label Content="Password:"/>
-            <PasswordBox Height="23" Name="passwordBox"/>
-            <Button Content="Login!" Click="loginButton_Click" Height="23" x:Name="loginButton"/>
+            <DockPanel Margin="2">
+                <Label Content="Username:" DockPanel.Dock="Left" Width="75" IsTabStop="False" />
+                <TextBox Height="23" TextWrapping="Wrap" Name="usernameBox" TabIndex="0" VerticalContentAlignment="Center" KeyDown="checkEnter_KeyDown" />
+            </DockPanel>
+            <DockPanel Margin="2">
+                <Label Content="Password:" DockPanel.Dock="Left" Width="75" IsTabStop="False" />
+                <PasswordBox Height="23" Name="passwordBox" VerticalContentAlignment="Center" TabIndex="1" KeyDown="checkEnter_KeyDown" />
+            </DockPanel>
+            <Button Content="Login!" Click="loginButton_Click" Height="23" TabIndex="2" x:Name="loginButton" Margin="2"/>
         </StackPanel>
     </Grid>
 </UserControl>

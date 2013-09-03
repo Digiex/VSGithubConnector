@@ -1,20 +1,9 @@
 ﻿using IronGitHub;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+using System.Diagnostics;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Digiexnet.VSGithubConnectorPkg
 {
@@ -23,6 +12,8 @@ namespace Digiexnet.VSGithubConnectorPkg
     /// </summary>
     public partial class IssuesControl : UserControl
     {
+        private string user = "";
+
         GitHubApi Api;
         public MainViewModel ViewModel = new MainViewModel();
         public IssuesControl()
@@ -30,22 +21,24 @@ namespace Digiexnet.VSGithubConnectorPkg
             this.DataContext = ViewModel;
             InitializeComponent();
             Api = VSGithubConnectorPkgPackage.Api;
+
             if (Api.Context.Authorization.Token == null)
             {
-                loginPanel.Visibility = System.Windows.Visibility.Visible;
-                issuesPanel.Visibility = System.Windows.Visibility.Collapsed;
+                loginControl.Visibility = System.Windows.Visibility.Visible;
+                issueListView.Visibility = System.Windows.Visibility.Collapsed;
             }
             else
             {
-                loginPanel.Visibility = System.Windows.Visibility.Collapsed;
-                issuesPanel.Visibility = System.Windows.Visibility.Visible;
+                loginControl.Visibility = System.Windows.Visibility.Collapsed;
+                issueListView.Visibility = System.Windows.Visibility.Visible;
             }
         }
 
         private void loginControl_LoggedIn(object sender, EventArgs e)
         {
-            loginPanel.Visibility = System.Windows.Visibility.Collapsed;
-            issuesPanel.Visibility = System.Windows.Visibility.Visible;
+            user = loginControl.User;
+            loginControl.Visibility = System.Windows.Visibility.Collapsed;
+            issueListView.Visibility = System.Windows.Visibility.Visible;
             LoadIssues();
         }
 
@@ -57,13 +50,25 @@ namespace Digiexnet.VSGithubConnectorPkg
                 var issues = await VSGithubConnectorPkgPackage.Api.Issues.Get("windowsphonehacker", "SparklrWP");
                 foreach (var issue in issues)
                 {
-                    ViewModel.Items.Add(new IssueListItem() {
+                    ViewModel.Items.Add(new IssueListItem()
+                    {
                         Name = issue.Title,
                         Id = issue.Number,
-                        Body = issue.Body
+                        Body = issue.Body,
+                        Assigned = issue.Assignee != null ? issue.Assignee.Login : null,
+                        Link = issue.Url.Replace("https://api.github.com/repos/", "https://github.com/"),
+                        CurrentUser = issue.Assignee != null ? (String.Compare(user, issue.Assignee.Login, true) == 0) : false
                     });
                 }
             }
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            if (e.Uri != null)
+                Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+
+            e.Handled = true;
         }
     }
 
@@ -77,12 +82,12 @@ namespace Digiexnet.VSGithubConnectorPkg
             {
                 return _items;
             }
-            private set
+            internal set
             {
                 if (_items != value)
                 {
                     _items = value;
-                        NotifyPropertyChanged("Items");
+                    NotifyPropertyChanged("Items");
                 }
             }
         }

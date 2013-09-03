@@ -5,26 +5,65 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Digiexnet.VSGithubConnectorPkg" x:Class="Digiexnet.VSGithubConnectorPkg.IssuesControl" 
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignData SampleData/SampleIssues.xaml}">
     <Grid>
-        <StackPanel>
-            <StackPanel x:Name="loginPanel">
-                <local:LoginControl x:Name="loginControl" LoggedIn="loginControl_LoggedIn"/>
-            </StackPanel>
-            <StackPanel x:Name="issuesPanel">
-                <ListView Name="issueListView" ItemsSource="{Binding Items}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <Label Content="{Binding Id}"/>
-                                <Label Content="{Binding Name}"/>
-                                <Label Content="{Binding Body}"/>
-                                <Line />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </StackPanel>
-        </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <ListView Name="issueListView" ItemsSource="{Binding Items}" Grid.Row="1" HorizontalContentAlignment="Stretch" Padding="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}">
+                        <Grid Margin="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Border Grid.Column="0" Grid.RowSpan="3" Grid.Row="0" Padding="5,20">
+                                <TextBlock Text="{Binding Id}" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" FontFamily="{DynamicResource {x:Static SystemFonts.CaptionFontFamilyKey}}" VerticalAlignment="Center" />
+                                <Border.Style>
+                                    <Style TargetType="{x:Type Border}">
+                                        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CurrentUser}" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                            </Border>
+                            <Border Grid.Column="1" Grid.Row="0">
+                                <TextBlock Text="{Binding Name}" TextAlignment="Center" Padding="0,3" Foreground="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" FontFamily="{DynamicResource {x:Static SystemFonts.CaptionFontFamilyKey}}" FontWeight="Light" FontSize="15" TextWrapping="Wrap" />
+                                <Border.Style>
+                                    <Style TargetType="{x:Type Border}">
+                                        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CurrentUser}" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                            </Border>
+                            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Body}" Padding="5,2" TextWrapping="Wrap" />              
+                            <Border Grid.Column="1" Grid.Row="2" Padding="5,2">
+                                <DockPanel>
+                                    <TextBlock FontSize="10" Foreground="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}">Assigned:</TextBlock>
+                                    <TextBlock FontSize="10" Foreground="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}" Text="{Binding Assigned, FallbackValue='Nobody is assigned'}" />
+                                    <TextBlock FontSize="10" Foreground="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}" DockPanel.Dock="Right"><Hyperlink NavigateUri="{Binding Link}" RequestNavigate="Hyperlink_RequestNavigate">Open in browser</Hyperlink></TextBlock>
+                                    <Label />
+                                </DockPanel>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <local:LoginControl x:Name="loginControl" LoggedIn="loginControl_LoggedIn" Grid.Row="0" Background="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}" Visibility="Collapsed" />
     </Grid>
 </UserControl>

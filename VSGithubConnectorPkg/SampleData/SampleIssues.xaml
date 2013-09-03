@@ -1,0 +1,10 @@
+﻿<local:MainViewModel
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"       
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Digiexnet.VSGithubConnectorPkg">
+    <local:MainViewModel.Items>
+        <local:IssueListItem Id="25" Body="Testing issue" Name="Headline" Assigned="Testuser" Link="http://google.de" />
+        <local:IssueListItem Id="12" Body="Issue 2" Name="Headline" />
+        <local:IssueListItem Id="12" Body="Issue 2" Name="Headline" CurrentUser="True" />
+    </local:MainViewModel.Items>
+</local:MainViewModel>
