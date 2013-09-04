@@ -8,9 +8,10 @@
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignData SampleData/SampleIssues.xaml}">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ListView Name="issueListView" ItemsSource="{Binding Items}" Grid.Row="1" HorizontalContentAlignment="Stretch" Padding="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <ListView Grid.Row="0" Name="issueListView" ItemsSource="{Binding Items}" HorizontalContentAlignment="Stretch" Padding="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}">
@@ -50,7 +51,7 @@
                                     </Style>
                                 </Border.Style>
                             </Border>
-                            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Body}" Padding="5,2" TextWrapping="Wrap" />              
+                            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Body}" Padding="5,2" TextWrapping="Wrap" />
                             <Border Grid.Column="1" Grid.Row="2" Padding="5,2">
                                 <DockPanel>
                                     <TextBlock FontSize="10" Foreground="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}">Assigned:</TextBlock>
@@ -63,7 +64,40 @@
                     </Border>
                 </DataTemplate>
             </ListView.ItemTemplate>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Style.Triggers>
+                        <!-- not current user and checked -->
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding CurrentUser}" Value="False" />
+                                <Condition Binding="{Binding IsChecked, ElementName=assignedOnlyCheckbox}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </MultiDataTrigger>
+
+                        <!-- current user and checked -->
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding CurrentUser}" Value="True" />
+                                <Condition Binding="{Binding IsChecked, ElementName=assignedOnlyCheckbox}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Visible" />
+                        </MultiDataTrigger>
+
+                        <!-- not filtering -->
+                        <DataTrigger Binding="{Binding IsChecked, ElementName=assignedOnlyCheckbox}" Value="False">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListBox.ItemContainerStyle>
         </ListView>
-        <local:LoginControl x:Name="loginControl" LoggedIn="loginControl_LoggedIn" Grid.Row="0" Background="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}" Visibility="Collapsed" />
+        <DockPanel Grid.Row="1">
+            <Button Click="Button_Click" DockPanel.Dock="Left">Refresh</Button>
+            <CheckBox DockPanel.Dock="Right" VerticalAlignment="Center" x:Name="assignedOnlyCheckbox">Show assigned only</CheckBox>
+            <TextBlock />
+        </DockPanel>
+        <local:LoginControl x:Name="loginControl" LoggedIn="loginControl_LoggedIn" Grid.Row="0" Grid.RowSpan="2" Background="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}" Visibility="Collapsed" />
     </Grid>
 </UserControl>
